@@ -13,7 +13,7 @@ import static java.lang.Math.pow;
 
 @RestController
 @RequestMapping(
-        value = "/triangle_checker",
+        value = "/api/v0/triangle_checker",
         produces = "application/json"
 )
 public class TriangleController {

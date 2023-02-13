@@ -18,55 +18,48 @@ import static java.lang.Math.pow;
 @RestController
 @RequestMapping(
         value = "/api/v0/triangle_checker",
-        produces = "application/json"
+        produces = "application/json",
+        method = RequestMethod.GET
 )
 public class TriangleController {
     private static final Logger logger = LogManager.getLogger(TriangleController.class);
-    private Integer aSide;
-    private Integer bSide;
-    private Integer cSide;
-
-    @RequestMapping(method = RequestMethod.GET)
     public String greeting(@RequestParam(name = "A") Integer a_side,
                            @RequestParam(name = "B") Integer b_side,
                            @RequestParam(name = "C") Integer c_side) throws IllegalArgumentsException {
-        aSide = a_side;
-        bSide = b_side;
-        cSide = c_side;
-
         logger.info("GET /triangle_checker");
 
-        validateData();
+        validateTriangle(a_side, b_side, c_side);
 
         JSONObject response = new JSONObject();
-        response.put("equilateral", checkEquilateral()); // равносторонний
-        response.put("isosceles", checkIsosceles()); // ранвобедренный
-        response.put("rectangular", checkRectangular()); // прямоугольный
+        response.put("equilateral", checkEquilateral(a_side, b_side, c_side)); // равносторонний
+        response.put("isosceles", checkIsosceles(a_side, b_side, c_side)); // ранвобедренный
+        response.put("rectangular", checkRectangular(a_side, b_side, c_side)); // прямоугольный
         return response.toString();
     }
-    public void validateData() throws IllegalArgumentsException {
-        if (aSide <= 0 || bSide <= 0 || cSide <= 0)
+    public static void validateTriangle(Integer a, Integer b, Integer c) throws IllegalArgumentsException {
+        if (a <= 0 || b <= 0 || c <= 0)
             throw new IllegalArgumentsException("Side can't be negative value");
     }
 
-    public boolean checkEquilateral() {
-        return Objects.equals(aSide, bSide) && Objects.equals(bSide, cSide);
+    public static boolean checkEquilateral(Integer a, Integer b, Integer c) {
+        return Objects.equals(a, b) && Objects.equals(b, c);
     }
 
-    public boolean checkIsosceles() {
-        return Objects.equals(aSide, bSide) || Objects.equals(bSide, cSide) || Objects.equals(aSide, cSide);
+    public static boolean checkIsosceles(Integer a, Integer b, Integer c) {
+        return Objects.equals(a, b) || Objects.equals(b, c) || Objects.equals(a, c);
     }
 
+    @FunctionalInterface
     interface MathOperation {
         double calc(double a);
     }
 
-    public boolean checkRectangular() {
+    public static boolean checkRectangular(Integer a, Integer b, Integer c) {
         MathOperation sq;
         sq = (x) -> pow(x, 2);
 
-        return sq.calc(aSide) == sq.calc(bSide) + sq.calc(cSide) ||
-                sq.calc(bSide) == sq.calc(aSide) + sq.calc(cSide) ||
-                sq.calc(cSide) == sq.calc(aSide) + sq.calc(bSide);
+        return sq.calc(a) == sq.calc(b) + sq.calc(c) ||
+                sq.calc(b) == sq.calc(a) + sq.calc(c) ||
+                sq.calc(c) == sq.calc(a) + sq.calc(b);
     }
 }

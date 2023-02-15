@@ -1,35 +1,53 @@
 package grvt.cloud.epam_web.controllers;
 
 import grvt.cloud.epam_web.exceptions.IllegalArgumentsException;
+import grvt.cloud.epam_web.models.Triangle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TriangleControllerTest {
+    static Triangle triangle = new Triangle(0,0,0);
     @Test
     void validateTriangle_exception() {
         Assertions.assertThrows(IllegalArgumentsException.class, () -> {
-            TriangleController.validateTriangle(1,-1,0);
+            triangle.Save(-1,3,1);
+            triangle.validateTriangle();
         });
     }
 
     @Test
     void checkEquilateral() {
-        Assertions.assertTrue(TriangleController.checkEquilateral(1,1,1));
-        Assertions.assertFalse(TriangleController.checkEquilateral(1,2,1));
+        triangle.Save(1,1,1);
+        Assertions.assertTrue(triangle.checkEquilateral());
+
+        triangle.Save(1,2,1);
+        Assertions.assertFalse(triangle.checkEquilateral());
     }
 
     @Test
     void checkIsosceles() {
-        Assertions.assertTrue(TriangleController.checkIsosceles(1,2,2));
-        Assertions.assertTrue(TriangleController.checkIsosceles(2,2,1));
-        Assertions.assertTrue(TriangleController.checkIsosceles(2,1,2));
-        Assertions.assertFalse(TriangleController.checkIsosceles(1,2,3));
+        triangle.Save(1,2,2);
+        Assertions.assertTrue(triangle.checkIsosceles());
+
+        triangle.Save(2,2,1);
+        Assertions.assertTrue(triangle.checkIsosceles());
+
+        triangle.Save(2,1,2);
+        Assertions.assertTrue(triangle.checkIsosceles());
+
+        triangle.Save(1,2,3);
+        Assertions.assertFalse(triangle.checkIsosceles());
     }
 
     @Test
     void checkRectangular() {
-        Assertions.assertTrue(TriangleController.checkRectangular(3,4,5));
-        Assertions.assertTrue(TriangleController.checkRectangular(6,8,10));
-        Assertions.assertFalse(TriangleController.checkRectangular(1,28,10));
+        triangle.Save(3,4,5);
+        Assertions.assertTrue(triangle.checkRectangular());
+
+        triangle.Save(6,8,10);
+        Assertions.assertTrue(triangle.checkRectangular());
+
+        triangle.Save(1,28,10);
+        Assertions.assertFalse(triangle.checkRectangular());
     }
 }

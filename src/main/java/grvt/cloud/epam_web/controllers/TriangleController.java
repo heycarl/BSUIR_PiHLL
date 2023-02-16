@@ -1,6 +1,9 @@
 package grvt.cloud.epam_web.controllers;
 
 import grvt.cloud.epam_web.cache.TriangleCacheResolver;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import grvt.cloud.epam_web.exceptions.IllegalArgumentsException;
 import grvt.cloud.epam_web.models.Triangle;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 
@@ -23,6 +25,7 @@ import java.util.Arrays;
         value = "/api/v0/triangle_checker",
         produces = "application/json"
 )
+@Tag(name = "Triangle", description = "Triangle's options methods")
 public class TriangleController {
     private static final Logger logger = LogManager.getLogger(TriangleController.class);
     private TriangleCacheResolver cache;
@@ -32,9 +35,10 @@ public class TriangleController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String greeting(@RequestParam(name = "A") Integer a_side,
-                           @RequestParam(name = "B") Integer b_side,
-                           @RequestParam(name = "C") Integer c_side) throws IllegalArgumentsException {
+    @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
+    public String greeting(@RequestParam(name = "A") @Parameter(description = "A side") Integer a_side,
+                           @RequestParam(name = "B") @Parameter(description = "B side") Integer b_side,
+                           @RequestParam(name = "C") @Parameter(description = "C side") Integer c_side) throws IllegalArgumentsException {
         logger.info("GET /triangle_checker");
         Integer[] sides = {a_side, b_side, c_side};
         if (cache.containsValue(Arrays.hashCode(sides))) {

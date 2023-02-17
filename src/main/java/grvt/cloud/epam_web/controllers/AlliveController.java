@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlliveController {
     @GetMapping("/allive")
     public String greeting() {
-        return "Hello from EPAM lab!";
+        return "Hello from EPAM lab!\n Endpoint called ";
     }
 }

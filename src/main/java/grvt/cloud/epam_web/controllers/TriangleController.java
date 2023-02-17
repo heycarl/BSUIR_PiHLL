@@ -1,6 +1,7 @@
 package grvt.cloud.epam_web.controllers;
 
 import grvt.cloud.epam_web.cache.TriangleCacheResolver;
+import grvt.cloud.epam_web.perfomance_counter.Counter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +41,8 @@ public class TriangleController {
                            @RequestParam(name = "B") @Parameter(description = "B side") Integer b_side,
                            @RequestParam(name = "C") @Parameter(description = "C side") Integer c_side) throws IllegalArgumentsException {
         logger.info("GET /triangle_checker");
+        Counter visitor = new Counter();
+        visitor.run();
         Integer[] sides = {a_side, b_side, c_side};
         if (cache.containsValue(Arrays.hashCode(sides))) {
             logger.info("Returned from cache");

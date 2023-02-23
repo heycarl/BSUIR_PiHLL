@@ -2,6 +2,9 @@ package grvt.cloud.epam_web.controllers;
 
 import grvt.cloud.epam_web.cache.TriangleCacheResolver;
 import grvt.cloud.epam_web.perfomance_counter.Counter;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +37,8 @@ public class TriangleController {
     public void setTriangleCacheResolver(TriangleCacheResolver cache) {
         this.cache = cache;
     }
+    private final RedisClient redisClient = RedisClient.create("redis://localhost:6379/0");
+    private final StatefulRedisConnection<String, String> connection = redisClient.connect();
 
     @RequestMapping(method = RequestMethod.GET)
     @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
@@ -42,11 +47,19 @@ public class TriangleController {
                            @RequestParam(name = "C") @Parameter(description = "C side") Integer c_side) throws IllegalArgumentsException {
         logger.info("GET /triangle_checker");
         Counter visitor = new Counter();
-        visitor.run();
+        visitor.start();
         Integer[] sides = {a_side, b_side, c_side};
-        if (cache.containsValue(Arrays.hashCode(sides))) {
+        Arrays.sort(sides);
+        int hashCode = Arrays.hashCode(sides);
+        if (cache.containsValue(hashCode)) {
             logger.info("Returned from cache");
             return cache.getValue(Arrays.hashCode(sides));
+        }
+        RedisCommands<String, String> syncCommands = connection.sync();
+        String resp = syncCommands.get(String.valueOf(hashCode));
+        if (resp != null) {
+            logger.info("Returned from DB");
+            return cache.putValue(hashCode, resp);
         }
 
         Triangle triangle = new Triangle(a_side, b_side, c_side);
@@ -56,6 +69,7 @@ public class TriangleController {
         response.put("equilateral", triangle.checkEquilateral()); // равносторонний
         response.put("isosceles", triangle.checkIsosceles()); // ранвобедренный
         response.put("rectangular", triangle.checkRectangular()); // прямоугольный
-        return cache.putValue(Arrays.hashCode(sides), response.toString());
+        syncCommands.set(String.valueOf(hashCode), response.toString());
+        return cache.putValue(hashCode, response.toString());
     }
 }

@@ -21,10 +21,9 @@ public class StatsController {
 
     @RequestMapping(method = RequestMethod.GET)
     @Operation(summary = "Visitors")
-    public String greetings(){
+    public String StatsEndpoint(){
         JSONObject response = new JSONObject();
         response.put("visitors", CounterLogic.getMetric_visitors());
         return response.toString();
     }
-
 }

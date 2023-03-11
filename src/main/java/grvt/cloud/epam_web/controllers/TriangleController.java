@@ -42,13 +42,13 @@ public class TriangleController {
 
     @RequestMapping(method = RequestMethod.GET)
     @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
-    public String greeting(@RequestParam(name = "A") @Parameter(description = "A side") Integer a_side,
-                           @RequestParam(name = "B") @Parameter(description = "B side") Integer b_side,
-                           @RequestParam(name = "C") @Parameter(description = "C side") Integer c_side) throws IllegalArgumentsException {
+    public String TriangleOptionsEndpoint(@RequestParam(name = "a_side") @Parameter(description = "A side") Integer aSide,
+                           @RequestParam(name = "b_side") @Parameter(description = "B side") Integer bSide,
+                           @RequestParam(name = "c_side") @Parameter(description = "C side") Integer cSide) throws IllegalArgumentsException {
         logger.info("GET /triangle_checker");
         Counter visitor = new Counter();
         visitor.start();
-        Integer[] sides = {a_side, b_side, c_side};
+        Integer[] sides = {aSide, bSide, cSide};
         Arrays.sort(sides);
         int hashCode = Arrays.hashCode(sides);
         if (cache.containsValue(hashCode)) {
@@ -62,7 +62,7 @@ public class TriangleController {
             return cache.putValue(hashCode, resp);
         }
 
-        Triangle triangle = new Triangle(a_side, b_side, c_side);
+        Triangle triangle = new Triangle(aSide, bSide, cSide);
         triangle.validateTriangle();
 
         JSONObject response = new JSONObject();

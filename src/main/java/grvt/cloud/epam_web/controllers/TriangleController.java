@@ -19,7 +19,12 @@ import org.apache.logging.log4j.Logger;
 import grvt.cloud.epam_web.exceptions.IllegalArgumentsException;
 import grvt.cloud.epam_web.models.Triangle;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 // Сервис должен принимать три параметра (сторона А, сторона Б, сторона В) и
@@ -34,46 +39,66 @@ public class TriangleController {
     public void setTriangleCacheResolver(TriangleCacheResolver cache) {
         this.cache = cache;
     }
-    private final RedisClient redisClient = RedisClient.create("redis://localhost:6379/0");
-    private final StatefulRedisConnection<String, String> connection = redisClient.connect();
-
-    @RequestMapping(value = "/api/v0/triangle/get_options",
-                    method = RequestMethod.GET,
-                    produces = "application/json"
-    )
-    @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
-    public ResponseEntity<String> TriangleOptionsEndpoint(
-            @RequestBody @Parameter(description = "Sides stream") List<Integer> requestSides
-    ) throws IllegalArgumentsException {
-        logger.info("GET /api/v0/triangle/get_options");
-        Counter visitor = new Counter();
-        visitor.start();
-
-        if ((long) requestSides.size() != 3 || !requestSides.stream().allMatch(Triangle::validateSide))
+//    private final RedisClient redisClient = RedisClient.create("redis://localhost:6379/0");
+//    private final StatefulRedisConnection<String, String> connection = redisClient.connect();
+//
+//    @RequestMapping(value = "/api/v0/triangle/get_options",
+//                    method = RequestMethod.GET,
+//                    produces = "application/json"
+//    )
+//    @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
+//    public ResponseEntity<String> TriangleOptionsEndpoint(
+//            @RequestBody @Parameter(description = "Sides stream") List<Integer> requestSides
+//    ) throws IllegalArgumentsException {
+//        logger.info("GET /api/v0/triangle/get_options");
+//        Counter visitor = new Counter();
+//        visitor.start();
+//
+//        if ((long) requestSides.size() != 3 || !requestSides.stream().allMatch(Triangle::validateSide))
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//
+//        List<Integer> sides = requestSides.stream()
+//                .sorted().toList();
+//
+//        int hashCode = sides.hashCode();
+//        if (cache.containsValue(hashCode)) {
+//            logger.info("Returned from cache");
+//            return new ResponseEntity<>(cache.getValue(hashCode), HttpStatus.OK);
+//        }
+//        RedisCommands<String, String> syncCommands = connection.sync();
+//        String resp = syncCommands.get(String.valueOf(hashCode));
+//        if (resp != null) {
+//            logger.info("Returned from DB");
+//            return new ResponseEntity<>(cache.putValue(hashCode, resp), HttpStatus.OK);
+//        }
+//
+//        Triangle triangle = new Triangle(sides);
+//
+//        JSONObject response = new JSONObject();
+//        response.put("equilateral", triangle.checkEquilateral()); // равносторонний
+//        response.put("isosceles", triangle.checkIsosceles()); // ранвобедренный
+//        response.put("rectangular", triangle.checkRectangular()); // прямоугольный
+//        syncCommands.set(String.valueOf(hashCode), response.toString());
+//        return new ResponseEntity<>(cache.putValue(hashCode, response.toString()), HttpStatus.OK);
+//    }
+    @RequestMapping(value = "/api/v0/triangle/validate_params",
+            method = RequestMethod.POST,
+            produces = "application/json")
+    @Operation(summary = "Bulk handling", description = "validates passed params")
+    public ResponseEntity<?> TriangleBulkEndpoint(@RequestBody List<Integer> params) throws IllegalArgumentsException {
+        logger.info("POST /triangle_checker");
+        if (params.isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        List<Integer> sides = requestSides.stream()
-                .sorted().toList();
-
-        int hashCode = sides.hashCode();
-        if (cache.containsValue(hashCode)) {
-            logger.info("Returned from cache");
-            return new ResponseEntity<>(cache.getValue(hashCode), HttpStatus.OK);
-        }
-        RedisCommands<String, String> syncCommands = connection.sync();
-        String resp = syncCommands.get(String.valueOf(hashCode));
-        if (resp != null) {
-            logger.info("Returned from DB");
-            return new ResponseEntity<>(cache.putValue(hashCode, resp), HttpStatus.OK);
-        }
-
-        Triangle triangle = new Triangle(sides);
-
         JSONObject response = new JSONObject();
-        response.put("equilateral", triangle.checkEquilateral()); // равносторонний
-        response.put("isosceles", triangle.checkIsosceles()); // ранвобедренный
-        response.put("rectangular", triangle.checkRectangular()); // прямоугольный
-        syncCommands.set(String.valueOf(hashCode), response.toString());
-        return new ResponseEntity<>(cache.putValue(hashCode, response.toString()), HttpStatus.OK);
+        response.put("args_provided", (long) params.size());
+        response.put("invalid_args", params.stream().filter(side -> !Triangle.validateSide(side)).count());
+        response.put("min", params.stream().min(Integer::compare).orElse(null));
+        response.put("max", params.stream().max(Integer::compare).orElse(null));
+        Map<Integer, Long> frequency= new HashMap<>();
+        params.forEach(element -> {
+            frequency.put(element, params.stream().filter(el -> Objects.equals(el, element)).count());
+        });
+        response.put("args_frequency", new JSONObject(frequency));
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 }

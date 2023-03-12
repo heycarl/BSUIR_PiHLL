@@ -2,6 +2,7 @@ package grvt.cloud.epam_web.models;
 
 import grvt.cloud.epam_web.exceptions.IllegalArgumentsException;
 
+import java.util.List;
 import java.util.Objects;
 
 import static java.lang.Math.pow;
@@ -35,10 +36,10 @@ public class Triangle {
         this.c = c;
     }
 
-    public Triangle(Integer a, Integer b, Integer c) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
+    public Triangle(List<Integer> sides) {
+        this.a = sides.get(0);
+        this.b = sides.get(1);
+        this.c = sides.get(2);
     }
 
     public void Save(Integer a, Integer b, Integer c) {
@@ -46,10 +47,12 @@ public class Triangle {
         this.b = b;
         this.c = c;
     }
-
+    public static boolean validateSide(int side) {
+        return side > 0;
+    }
     public void validateTriangle() throws IllegalArgumentsException {
-        if (a <= 0 || b <= 0 || c <= 0)
-            throw new IllegalArgumentsException("Side can't be negative value");
+        if (!validateSide(a) || !validateSide(b) || !validateSide(c))
+            throw new IllegalArgumentsException();
     }
 
     public boolean checkEquilateral() {

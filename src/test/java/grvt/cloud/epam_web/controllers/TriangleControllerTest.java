@@ -5,8 +5,10 @@ import grvt.cloud.epam_web.models.Triangle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 class TriangleControllerTest {
-    static Triangle triangle = new Triangle(0,0,0);
+    static Triangle triangle = new Triangle(Arrays.asList(0,0,0));
     @Test
     void validateTriangle_exception() {
         Assertions.assertThrows(IllegalArgumentsException.class, () -> {

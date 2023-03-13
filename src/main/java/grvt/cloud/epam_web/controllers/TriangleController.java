@@ -39,15 +39,15 @@ public class TriangleController {
     private final RedisClient redisClient = RedisClient.create("redis://localhost:6379/0");
     private final StatefulRedisConnection<String, String> connection = redisClient.connect();
 
-    @RequestMapping(value = "/api/v0/triangle/get_options",
+    @RequestMapping(value = "/api/v0/triangle/getOptions",
                     method = RequestMethod.GET,
                     produces = "application/json"
     )
     @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
-    public ResponseEntity<String> TriangleOptionsEndpoint(
-            @RequestBody @Parameter(description = "Sides stream") List<Integer> requestSides
+    public ResponseEntity<String> triangleOptionsEndpoint(
+            @RequestBody @Parameter(description = "Triangle sides stream") List<Integer> requestSides
     ) {
-        logger.info("GET /api/v0/triangle/get_options");
+        logger.info("GET /api/v0/triangle/getOptions");
         Counter visitor = new Counter();
         visitor.start();
 
@@ -78,24 +78,26 @@ public class TriangleController {
         syncCommands.set(String.valueOf(hashCode), response.toString());
         return new ResponseEntity<>(cache.putValue(hashCode, response.toString()), HttpStatus.OK);
     }
-    @RequestMapping(value = "/api/v0/triangle/validate_params",
+    @RequestMapping(value = "/api/v0/triangle/validateParams",
             method = RequestMethod.POST,
             produces = "application/json")
     @Operation(summary = "Bulk handling", description = "validates passed params")
-    public ResponseEntity<?> TriangleBulkEndpoint(@RequestBody List<Integer> params) {
+    public ResponseEntity<?> triangleBulkEndpoint(
+            @RequestBody @Parameter(description = "Sides stream") List<Integer> params
+    ) {
         logger.info("POST /triangle_checker");
         if (params.isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         JSONObject response = new JSONObject();
-        response.put("args_provided", (long) params.size());
-        response.put("invalid_args", params.stream().filter(side -> !Triangle.validateSide(side)).count());
+        response.put("argsProvided", (long) params.size());
+        response.put("invalidArgs", params.stream().filter(side -> !Triangle.validateSide(side)).count());
         response.put("min", params.stream().min(Integer::compare).orElse(null));
         response.put("max", params.stream().max(Integer::compare).orElse(null));
         Map<Integer, Long> frequency= new HashMap<>();
         params.forEach(element -> frequency.put(element, params.stream()
                 .filter(el -> Objects.equals(el, element))
                 .count()));
-        response.put("args_frequency", new JSONObject(frequency));
+        response.put("argsFrequency", new JSONObject(frequency));
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 }

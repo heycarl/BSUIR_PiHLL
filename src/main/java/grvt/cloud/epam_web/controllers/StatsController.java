@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 )
 @Tag(name = "Statistics", description = "Gets service usage info")
 public class StatsController {
-    private static final Logger logger = LogManager.getLogger(TriangleController.class);
+    private static final Logger logger = LogManager.getLogger();
 
     @RequestMapping(method = RequestMethod.GET)
     @Operation(summary = "Visitors")

@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "invalid data")
 public class IllegalArgumentsException extends Exception {
-    private static final Logger logger = LogManager.getLogger(TriangleController.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public IllegalArgumentsException() {
     }

@@ -30,7 +30,7 @@ import java.util.Objects;
 @RestController
 @Tag(name = "Triangle", description = "Triangle's options methods")
 public class TriangleController {
-    private static final Logger logger = LogManager.getLogger(TriangleController.class);
+    private static final Logger logger = LogManager.getLogger();
     private TriangleCacheResolver cache;
     @Autowired
     public void setTriangleCacheResolver(TriangleCacheResolver cache) {

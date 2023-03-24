@@ -23,7 +23,7 @@ public class StatsController {
     @Operation(summary = "Visitors")
     public String StatsEndpoint(){
         JSONObject response = new JSONObject();
-        response.put("visitors", CounterLogic.getMetric_visitors());
+        response.put("visitors", CounterLogic.getMetricVisitors());
         return response.toString();
     }
 }

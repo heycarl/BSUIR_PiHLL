@@ -12,44 +12,44 @@ class TriangleControllerTest {
     @Test
     void validateTriangle_exception() {
         Assertions.assertThrows(IllegalArgumentsException.class, () -> {
-            triangle.Save(-1,3,1);
+            triangle.save(-1,3,1);
             triangle.validateTriangle();
         });
     }
 
     @Test
     void checkEquilateral() {
-        triangle.Save(1,1,1);
+        triangle.save(1,1,1);
         Assertions.assertTrue(triangle.checkEquilateral());
 
-        triangle.Save(1,2,1);
+        triangle.save(1,2,1);
         Assertions.assertFalse(triangle.checkEquilateral());
     }
 
     @Test
     void checkIsosceles() {
-        triangle.Save(1,2,2);
+        triangle.save(1,2,2);
         Assertions.assertTrue(triangle.checkIsosceles());
 
-        triangle.Save(2,2,1);
+        triangle.save(2,2,1);
         Assertions.assertTrue(triangle.checkIsosceles());
 
-        triangle.Save(2,1,2);
+        triangle.save(2,1,2);
         Assertions.assertTrue(triangle.checkIsosceles());
 
-        triangle.Save(1,2,3);
+        triangle.save(1,2,3);
         Assertions.assertFalse(triangle.checkIsosceles());
     }
 
     @Test
     void checkRectangular() {
-        triangle.Save(3,4,5);
+        triangle.save(3,4,5);
         Assertions.assertTrue(triangle.checkRectangular());
 
-        triangle.Save(6,8,10);
+        triangle.save(6,8,10);
         Assertions.assertTrue(triangle.checkRectangular());
 
-        triangle.Save(1,28,10);
+        triangle.save(1,28,10);
         Assertions.assertFalse(triangle.checkRectangular());
     }
 }

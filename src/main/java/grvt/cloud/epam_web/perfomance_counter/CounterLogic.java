@@ -5,7 +5,7 @@ public class CounterLogic {
     public static void Increment() {
         metric_visitors++;
     }
-    public static Integer getMetric_visitors() {
+    public static Integer getMetricVisitors() {
         return metric_visitors;
     }
 }

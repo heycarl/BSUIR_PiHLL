@@ -42,7 +42,7 @@ public class Triangle {
         this.c = sides.get(2);
     }
 
-    public void Save(Integer a, Integer b, Integer c) {
+    public void save(Integer a, Integer b, Integer c) {
         this.a = a;
         this.b = b;
         this.c = c;

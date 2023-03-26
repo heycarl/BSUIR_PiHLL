@@ -1,22 +1,24 @@
-package grvt.cloud.epam_web.controllers;
+package grvt.cloud.epam.controllers;
 
-import grvt.cloud.epam_web.cache.TriangleCacheResolver;
-import grvt.cloud.epam_web.perfomance_counter.Counter;
+import grvt.cloud.epam.cache.TriangleCacheResolver;
+import grvt.cloud.epam.models.Triangle;
+import grvt.cloud.epam.perfomance_counter.Counter;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import org.json.JSONObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import grvt.cloud.epam_web.models.Triangle;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package grvt.cloud.epam_web.controllers;
+package grvt.cloud.epam.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

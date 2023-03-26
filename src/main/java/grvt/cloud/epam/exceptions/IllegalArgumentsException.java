@@ -1,11 +1,9 @@
-package grvt.cloud.epam_web.exceptions;
-
-import grvt.cloud.epam_web.controllers.TriangleController;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+package grvt.cloud.epam.exceptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "invalid data")
 public class IllegalArgumentsException extends Exception {

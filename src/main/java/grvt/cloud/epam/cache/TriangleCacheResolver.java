@@ -1,15 +1,14 @@
-package grvt.cloud.epam_web.cache;
+package grvt.cloud.epam.cache;
 
 
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class TriangleCacheResolver {
-    private Map<Integer, String> map = new HashMap<Integer, String>();
+    private final Map<Integer, String> map = new HashMap<>();
     public String getValue(Integer value) {
         return map.get(value);
     }

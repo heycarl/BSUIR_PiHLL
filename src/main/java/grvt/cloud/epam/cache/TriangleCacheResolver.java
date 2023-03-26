@@ -8,16 +8,16 @@ import java.util.Map;
 
 @Component
 public class TriangleCacheResolver {
-    private final Map<Integer, String> map = new HashMap<>();
+    private final Map<Integer, String> cacheMap = new HashMap<>();
     public String getValue(Integer value) {
-        return map.get(value);
+        return cacheMap.get(value);
     }
     public String putValue(Integer value, String result) {
-        map.put(value, result);
+        cacheMap.put(value, result);
         return result;
     }
 
     public boolean containsValue(Integer key) {
-        return map.containsKey(key);
+        return cacheMap.containsKey(key);
     }
 }

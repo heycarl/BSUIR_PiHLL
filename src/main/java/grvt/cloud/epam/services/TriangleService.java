@@ -22,6 +22,12 @@ public class TriangleService {
     }
 
     public boolean checkEquilateral() {
+        // Fake time-consuming operation
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         return Objects.equals(triangle.getA(), triangle.getB())
                 && Objects.equals(triangle.getB(), triangle.getC());
     }

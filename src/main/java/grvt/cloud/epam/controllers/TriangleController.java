@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 
 // Сервис должен принимать три параметра (сторона А, сторона Б, сторона В) и
@@ -45,7 +47,7 @@ public class TriangleController {
 
     @RequestMapping(value = "/api/v0/triangle/getOptions",
             method = RequestMethod.GET,
-            produces = "application/json"
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
     public ResponseEntity<String> triangleOptionsEndpoint(
@@ -75,12 +77,21 @@ public class TriangleController {
 
         TriangleService triangleService = new TriangleService(sides);
 
+        CompletableFuture<String> futureCalculations = CompletableFuture.supplyAsync(() -> calculateOptions(triangleService));
+        futureCalculations.thenAccept(result -> storeToDatabase(hashCode, result));
+
+        return new ResponseEntity<>(new JSONObject().put("triangleHash", hashCode).toString(), HttpStatus.OK);
+    }
+    void storeToDatabase(int key, String value){
+        RedisCommands<String, String> syncCommands = redisConnection.sync();
+        syncCommands.set(String.valueOf(key), value);
+    }
+    String calculateOptions(TriangleService triangleService){
         JSONObject response = new JSONObject();
         response.put("equilateral", triangleService.checkEquilateral()); // равносторонний
         response.put("isosceles", triangleService.checkIsosceles());     // ранвобедренный
         response.put("rectangular", triangleService.checkRectangular()); // прямоугольный
-        syncCommands.set(String.valueOf(hashCode), response.toString());
-        return new ResponseEntity<>(triangleCacheResolver.putValue(hashCode, response.toString()), HttpStatus.OK);
+        return response.toString();
     }
 
     @RequestMapping(value = "/api/v0/triangle/validateParams",

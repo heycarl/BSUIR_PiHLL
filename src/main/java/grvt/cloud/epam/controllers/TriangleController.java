@@ -33,13 +33,14 @@ import java.util.Objects;
 @Tag(name = "Triangle", description = "Triangle's options methods")
 public class TriangleController {
     private static final Logger logger = LogManager.getLogger();
-    private TriangleCacheResolver cache;
+    private TriangleCacheResolver triangleCacheResolver;
     @Autowired
     public void setTriangleCacheResolver(TriangleCacheResolver cache) {
-        this.cache = cache;
+        this.triangleCacheResolver = cache;
     }
+
     private final RedisClient redisClient = RedisClient.create("redis://localhost:6379/0");
-    private final StatefulRedisConnection<String, String> connection = redisClient.connect();
+    private final StatefulRedisConnection<String, String> redisConnection = redisClient.connect();
 
     @RequestMapping(value = "/api/v0/triangle/getOptions",
                     method = RequestMethod.GET,
@@ -60,15 +61,15 @@ public class TriangleController {
                 .sorted().toList();
 
         int hashCode = sides.hashCode();
-        if (cache.containsValue(hashCode)) {
+        if (triangleCacheResolver.containsValue(hashCode)) {
             logger.info("Returned from cache");
-            return new ResponseEntity<>(cache.getValue(hashCode), HttpStatus.OK);
+            return new ResponseEntity<>(triangleCacheResolver.getValue(hashCode), HttpStatus.OK);
         }
-        RedisCommands<String, String> syncCommands = connection.sync();
+        RedisCommands<String, String> syncCommands = redisConnection.sync();
         String resp = syncCommands.get(String.valueOf(hashCode));
         if (resp != null) {
             logger.info("Returned from DB");
-            return new ResponseEntity<>(cache.putValue(hashCode, resp), HttpStatus.OK);
+            return new ResponseEntity<>(triangleCacheResolver.putValue(hashCode, resp), HttpStatus.OK);
         }
 
         Triangle triangle = new Triangle(sides);
@@ -78,7 +79,7 @@ public class TriangleController {
         response.put("isosceles", triangle.checkIsosceles()); // ранвобедренный
         response.put("rectangular", triangle.checkRectangular()); // прямоугольный
         syncCommands.set(String.valueOf(hashCode), response.toString());
-        return new ResponseEntity<>(cache.putValue(hashCode, response.toString()), HttpStatus.OK);
+        return new ResponseEntity<>(triangleCacheResolver.putValue(hashCode, response.toString()), HttpStatus.OK);
     }
     @RequestMapping(value = "/api/v0/triangle/validateParams",
             method = RequestMethod.POST,

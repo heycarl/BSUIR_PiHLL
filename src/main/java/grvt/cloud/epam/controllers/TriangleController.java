@@ -1,8 +1,8 @@
 package grvt.cloud.epam.controllers;
 
 import grvt.cloud.epam.cache.TriangleCacheResolver;
-import grvt.cloud.epam.models.Triangle;
 import grvt.cloud.epam.perfomance_counter.Counter;
+import grvt.cloud.epam.services.TriangleService;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -34,6 +34,7 @@ import java.util.Objects;
 public class TriangleController {
     private static final Logger logger = LogManager.getLogger();
     private TriangleCacheResolver triangleCacheResolver;
+
     @Autowired
     public void setTriangleCacheResolver(TriangleCacheResolver cache) {
         this.triangleCacheResolver = cache;
@@ -43,8 +44,8 @@ public class TriangleController {
     private final StatefulRedisConnection<String, String> redisConnection = redisClient.connect();
 
     @RequestMapping(value = "/api/v0/triangle/getOptions",
-                    method = RequestMethod.GET,
-                    produces = "application/json"
+            method = RequestMethod.GET,
+            produces = "application/json"
     )
     @Operation(summary = "Options", description = "equilateral, isosceles and rectangular")
     public ResponseEntity<String> triangleOptionsEndpoint(
@@ -54,7 +55,7 @@ public class TriangleController {
         Counter visitor = new Counter();
         visitor.start();
 
-        if ((long) requestSides.size() != 3 || !requestSides.stream().allMatch(Triangle::validateSide))
+        if ((long) requestSides.size() != 3 || requestSides.stream().anyMatch(TriangleService::checkInvalidSide))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         List<Integer> sides = requestSides.stream()
@@ -72,15 +73,16 @@ public class TriangleController {
             return new ResponseEntity<>(triangleCacheResolver.putValue(hashCode, resp), HttpStatus.OK);
         }
 
-        Triangle triangle = new Triangle(sides);
+        TriangleService triangleService = new TriangleService(sides);
 
         JSONObject response = new JSONObject();
-        response.put("equilateral", triangle.checkEquilateral()); // равносторонний
-        response.put("isosceles", triangle.checkIsosceles()); // ранвобедренный
-        response.put("rectangular", triangle.checkRectangular()); // прямоугольный
+        response.put("equilateral", triangleService.checkEquilateral()); // равносторонний
+        response.put("isosceles", triangleService.checkIsosceles());     // ранвобедренный
+        response.put("rectangular", triangleService.checkRectangular()); // прямоугольный
         syncCommands.set(String.valueOf(hashCode), response.toString());
         return new ResponseEntity<>(triangleCacheResolver.putValue(hashCode, response.toString()), HttpStatus.OK);
     }
+
     @RequestMapping(value = "/api/v0/triangle/validateParams",
             method = RequestMethod.POST,
             produces = "application/json")
@@ -93,10 +95,10 @@ public class TriangleController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         JSONObject response = new JSONObject();
         response.put("argsProvided", (long) params.size());
-        response.put("invalidArgs", params.stream().filter(side -> !Triangle.validateSide(side)).count());
+        response.put("invalidArgs", params.stream().filter(TriangleService::checkInvalidSide).count());
         response.put("min", params.stream().min(Integer::compare).orElse(null));
         response.put("max", params.stream().max(Integer::compare).orElse(null));
-        Map<Integer, Long> frequency= new HashMap<>();
+        Map<Integer, Long> frequency = new HashMap<>();
         params.forEach(element -> frequency.put(element, params.stream()
                 .filter(el -> Objects.equals(el, element))
                 .count()));

@@ -1,55 +1,55 @@
 package grvt.cloud.epam.controllers;
 
 import grvt.cloud.epam.exceptions.IllegalArgumentsException;
-import grvt.cloud.epam.models.Triangle;
+import grvt.cloud.epam.services.TriangleService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 class TriangleControllerTest {
-     static final Triangle triangle = new Triangle(Arrays.asList(0, 0, 0));
+    static final TriangleService triangleService = new TriangleService(Arrays.asList(0, 0, 0));
     @Test
     void validateTriangle_exception() {
         Assertions.assertThrows(IllegalArgumentsException.class, () -> {
-            triangle.setSides(-1, 3, 1);
-            triangle.validateTriangle();
+            triangleService.setSides(-1, 3, 1);
+            triangleService.validateTriangle();
         });
     }
 
     @Test
     void checkEquilateral() {
-        triangle.setSides(1, 1, 1);
-        Assertions.assertTrue(triangle.checkEquilateral());
+        triangleService.setSides(1, 1, 1);
+        Assertions.assertTrue(triangleService.checkEquilateral());
 
-        triangle.setSides(1, 2, 1);
-        Assertions.assertFalse(triangle.checkEquilateral());
+        triangleService.setSides(1, 2, 1);
+        Assertions.assertFalse(triangleService.checkEquilateral());
     }
 
     @Test
     void checkIsosceles() {
-        triangle.setSides(1, 2, 2);
-        Assertions.assertTrue(triangle.checkIsosceles());
+        triangleService.setSides(1, 2, 2);
+        Assertions.assertTrue(triangleService.checkIsosceles());
 
-        triangle.setSides(2, 2, 1);
-        Assertions.assertTrue(triangle.checkIsosceles());
+        triangleService.setSides(2, 2, 1);
+        Assertions.assertTrue(triangleService.checkIsosceles());
 
-        triangle.setSides(2, 1, 2);
-        Assertions.assertTrue(triangle.checkIsosceles());
+        triangleService.setSides(2, 1, 2);
+        Assertions.assertTrue(triangleService.checkIsosceles());
 
-        triangle.setSides(1, 2, 3);
-        Assertions.assertFalse(triangle.checkIsosceles());
+        triangleService.setSides(1, 2, 3);
+        Assertions.assertFalse(triangleService.checkIsosceles());
     }
 
     @Test
     void checkRectangular() {
-        triangle.setSides(3, 4, 5);
-        Assertions.assertTrue(triangle.checkRectangular());
+        triangleService.setSides(3, 4, 5);
+        Assertions.assertTrue(triangleService.checkRectangular());
 
-        triangle.setSides(6, 8, 10);
-        Assertions.assertTrue(triangle.checkRectangular());
+        triangleService.setSides(6, 8, 10);
+        Assertions.assertTrue(triangleService.checkRectangular());
 
-        triangle.setSides(1, 28, 10);
-        Assertions.assertFalse(triangle.checkRectangular());
+        triangleService.setSides(1, 28, 10);
+        Assertions.assertFalse(triangleService.checkRectangular());
     }
 }

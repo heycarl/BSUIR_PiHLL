@@ -1,6 +1,6 @@
-package grvt.cloud.epam_web.models;
+package grvt.cloud.epam.models;
 
-import grvt.cloud.epam_web.exceptions.IllegalArgumentsException;
+import grvt.cloud.epam.exceptions.IllegalArgumentsException;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package grvt.cloud.epam_web.perfomance_counter;
+package grvt.cloud.epam.perfomance_counter;
 
 public class CounterLogic {
     private static Integer metric_visitors = 0;

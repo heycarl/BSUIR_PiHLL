@@ -1,7 +1,7 @@
-package grvt.cloud.epam_web.controllers;
+package grvt.cloud.epam.controllers;
 
-import grvt.cloud.epam_web.exceptions.IllegalArgumentsException;
-import grvt.cloud.epam_web.models.Triangle;
+import grvt.cloud.epam.exceptions.IllegalArgumentsException;
+import grvt.cloud.epam.models.Triangle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

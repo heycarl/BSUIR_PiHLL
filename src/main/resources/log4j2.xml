@@ -8,7 +8,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name= "grvt.cloud.epam_web" level="debug" additivity="true">
+        <Logger name="grvt.cloud.epam" level="debug" additivity="true">
             <AppenderRef ref="Console"/>
         </Logger>
 

@@ -1,10 +1,8 @@
-package grvt.cloud.epam_web.controllers;
+package grvt.cloud.epam.controllers;
 
-import grvt.cloud.epam_web.perfomance_counter.CounterLogic;
+import grvt.cloud.epam.perfomance_counter.CounterLogic;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
